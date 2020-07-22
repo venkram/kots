@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/replicatedhq/kots/pkg/auth"
 	"github.com/replicatedhq/kots/pkg/kotsadm/types"
 	kotstypes "github.com/replicatedhq/kots/pkg/kotsadm/types"
 	"github.com/replicatedhq/kots/pkg/util"
@@ -54,7 +53,7 @@ func kotsadmRole(namespace string) *rbacv1.Role {
 			{
 				APIGroups:     []string{""},
 				Resources:     []string{"configmaps"},
-				ResourceNames: []string{"kotsadm-application-metadata", "kotsadm-gitops"},
+				ResourceNames: []string{"kotsadm-application-metadata", "kotsadm-gitops", "kotsadm-redact"},
 				Verbs:         metav1.Verbs{"get", "delete", "update"},
 			},
 			{
@@ -63,20 +62,12 @@ func kotsadmRole(namespace string) *rbacv1.Role {
 				Verbs:     metav1.Verbs{"create"},
 			},
 			{
+				/* We need permissions to all secrets in the namesapce to support automated installs
+				   where we list secrets by label selector, and delete
+				*/
 				APIGroups: []string{""},
 				Resources: []string{"secrets"},
-				ResourceNames: []string{
-					"kotsadm-encryption",
-					"kotsadm-gitops",
-					"kotsadm-password",
-					auth.KotsadmAuthstringSecretName,
-				},
-				Verbs: metav1.Verbs{"get", "update"},
-			},
-			{
-				APIGroups: []string{""},
-				Resources: []string{"secrets"},
-				Verbs:     metav1.Verbs{"create"},
+				Verbs:     metav1.Verbs{"create", "list", "get", "update", "delete"},
 			},
 		},
 	}
