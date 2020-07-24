@@ -1229,6 +1229,7 @@ class AppVersionHistory extends Component {
             forceDeploy={this.onForceDeployClick}
             showDeployWarningModal={this.state.showDeployWarningModal}
             showSkipModal={this.state.showSkipModal}
+            slug={this.props.match.params.slug}
           />}
       </div>
     );
